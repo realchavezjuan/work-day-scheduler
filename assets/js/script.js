@@ -35,17 +35,18 @@ var schedule = {
     four: "",
     five: ""
 };
+var x=9;
+var AmPm = "AM";
 
 //create the 8 time block elements
 var createTimeBlockEl = function(){
-    var x = 9;
-    if (x < 13){
+    
+    if (x < 13 && x!==6 ){
         
-        var blockHour = 9;
         loadTask();
         //var text = "example";
         var timeBlockEl = $("<div>").addClass("time-block d-flex row");
-        var hourEl = $("<p>").addClass("hour col-1").text(x + "AM");
+        var hourEl = $("<p>").addClass("hour col-1").text(x + AmPm);
         var textareaEl = $("<textarea>").addClass("textarea col-10").text(schedule.nine);
         var saveBtnEl = $("<p>").addClass("saveBtn col-1").text("SAVE");
         
@@ -55,13 +56,17 @@ var createTimeBlockEl = function(){
         $(".container").append(timeBlockEl);
 
         x++;
-        if(x===12){
+        if(x===13){
             x=1;
+            AmPm="PM";
         }
         createTimeBlockEl();
     }
     
 }
+
+//set time block color
+
 
 //get local storage to page
 var loadTask = function(){
@@ -82,8 +87,10 @@ var saveTask = function() {
 
 setCurrentDay();
 createTimeBlockEl();
+blockColor();
 
 //saves tasks when SAVE Button is clicked
 $(".saveBtn").on("click", saveTask);
+
 
 
