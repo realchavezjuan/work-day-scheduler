@@ -1,6 +1,3 @@
-//when it is past that time, will change the color of the list item
-//when it is the current hour, list item will be a particular color
-//for future hours, those list items will be a different color
 var arrayOfTimeBlocks = [
     {
         hour: "9 am",
@@ -75,15 +72,20 @@ var createTimeBlockEl = function(){
 
 //get local storage to page
 var loadTask = function(){
-    arrayOfTimeBlocks = JSON.parse(localStorage.getItem("schedule"));
+    // check if there is an array in local storage
+    //if true, change array with locally stored array
+    //if false, use existing array in global scope
+    if(localStorage.getItem("schedule")){
+        // change array with array stored in local storage
+        arrayOfTimeBlocks = JSON.parse(localStorage.getItem("schedule"));
+        console.log("changing array to locally stored array...");
+    }
 
-    console.log(arrayOfTimeBlocks);
     // add text from local storage into existing textarea elements
     for (let i = 0; i < 9; i++) {
         var textAreaEl = $("textarea")[i];
         textAreaEl.innerHTML = arrayOfTimeBlocks[i].text;
     }
-    
     
 }
 
