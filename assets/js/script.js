@@ -76,11 +76,15 @@ var createTimeBlockEl = function(){
 //get local storage to page
 var loadTask = function(){
     arrayOfTimeBlocks = JSON.parse(localStorage.getItem("schedule"));
+
+    console.log(arrayOfTimeBlocks);
     // add text from local storage into existing textarea elements
     for (let i = 0; i < 9; i++) {
         var textAreaEl = $("textarea")[i];
         textAreaEl.innerHTML = arrayOfTimeBlocks[i].text;
     }
+    
+    
 }
 
 //save textarea content into local storage
