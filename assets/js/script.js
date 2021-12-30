@@ -1,96 +1,141 @@
-//attack the header
-//get the current date
-// apply the current date to the existing header
-
-//every day has a regular work schedule from 9-5pm
-//create 8 list items with children
-//children include: hour, text box, save button
-//text box will start off empty but can be saved into the local storage
-
-
 //when it is past that time, will change the color of the list item
 //when it is the current hour, list item will be a particular color
 //for future hours, those list items will be a different color
+var arrayOfTimeBlocks = [
+    {
+        hour: "9 am",
+        text: ""
+    },
+    {
+        hour: "10 am",
+        text: ""
+    },
+    {
+        hour: "11 am",
+        text: ""
+    },
+    {
+        hour: "12 pm",
+        text: ""
+    },
+    {
+        hour: "1 pm",
+        text: ""
+    },
+    {
+        hour: "2 pm",
+        text: ""
+    },
+    {
+        hour: "3 pm",
+        text: ""
+    },
+    {
+        hour: "4 pm",
+        text: ""
+    },
+    {
+        hour: "5 pm",
+        text: ""
+    }
+];
 
-//when i click on the box, I can edit the content and save it to the lcoal storage
+var main = function(){
+    setCurrentDay();
+    createTimeBlockEl();
+    loadTask();
+    colorCode();
+}
 
-//function to load task form local storage
-// function to save task after editing it
+// sets current date on header
 var setCurrentDay = function(){
     var day = moment().format("dddd, MMM Do YY");
     
-    //currentDayEl.textContent = day; //javascript 
+    //places it on the header
     $("#currentDay").text(day);
 }
-
-//initializing object for local storage of task
-var schedule = {
-    nine: "",
-    ten: "",
-    eleven: "",
-    twelve: "",
-    one: "",
-    two: "",
-    three: "",
-    four: "",
-    five: ""
-};
-var x=9;
-var AmPm = "AM";
 
 //create the 8 time block elements
 var createTimeBlockEl = function(){
     
-    if (x < 13 && x!==6 ){
-        
-        loadTask();
-        //var text = "example";
+    // creates 8 time block elements
+    for (var i = 0; i < 9; i++) {
         var timeBlockEl = $("<div>").addClass("time-block d-flex row");
-        var hourEl = $("<p>").addClass("hour col-1").text(x + AmPm);
-        var textareaEl = $("<textarea>").addClass("textarea col-10").text(schedule.nine);
-        var saveBtnEl = $("<p>").addClass("saveBtn col-1").text("SAVE");
+        var hourEl = $("<p>").addClass("hour col-1 ").text(arrayOfTimeBlocks[i].hour);
+        var textareaEl = $("<textarea>").addClass("col-10").attr("id", [i]).attr("placeholder", "Write Task Here");
+        var saveBtnEl = $("<p>").addClass("saveBtn col-1").attr("id", [i]).text("SAVE");
         
         timeBlockEl.append(hourEl);
         timeBlockEl.append(textareaEl);
         timeBlockEl.append(saveBtnEl);
-        $(".container").append(timeBlockEl);
-
-        x++;
-        if(x===13){
-            x=1;
-            AmPm="PM";
-        }
-        createTimeBlockEl();
+        $(".main-container").append(timeBlockEl);
     }
-    
+
 }
-
-//set time block color
-
 
 //get local storage to page
 var loadTask = function(){
-    schedule = JSON.parse(localStorage.getItem("schedule"));
-    console.log(schedule);
+    arrayOfTimeBlocks = JSON.parse(localStorage.getItem("schedule"));
+    // add text from local storage into existing textarea elements
+    for (let i = 0; i < 9; i++) {
+        var textAreaEl = $("textarea")[i];
+        textAreaEl.innerHTML = arrayOfTimeBlocks[i].text;
+    }
 }
 
 //save textarea content into local storage
-var saveTask = function() {
-    var textInBox = $("textarea").val();
+var saveTask = function(event) {
+    // check if event is a save btn
+    var elementId = $(event.target).hasClass("saveBtn");
+    // if true, grab its id
+    if(elementId){
+        var saveButtonId = $(event.target).attr("id");
+        console.log("save button id: ", saveButtonId);
     
-    console.log(textInBox);
-    schedule.nine = textInBox;
-    localStorage.setItem("schedule", JSON.stringify(schedule));
-
+        // look through the text area id's to match the save button id
+        for (let i = 0; i < 9; i++) {
+            var textAreaEl = $("textarea")[i];
+            var textAreaId = $(textAreaEl).attr("id");
+            //if save button id matches text area id, save info into local storage
+            if(textAreaId === saveButtonId){
+                //store text in textarea into array
+                var text = textAreaEl.value;
+                arrayOfTimeBlocks[i].text = text;
+                // store array with updated text into local storage
+                localStorage.setItem("schedule", JSON.stringify(arrayOfTimeBlocks));
+            }
+        }   
+    }  
 }
 
+// color code textarea elements
+var colorCode = function() {
+    // get current hour
+    var currentHour = parseInt(moment().format('H'));
 
-setCurrentDay();
-createTimeBlockEl();
-blockColor();
+    // arrayo of work hours in a day
+    var workHour = [9,10,11,12,13,14,15,16,17];
+    
+    for (let i = 0; i < 9; i++) {
+        var textAreaEl = $("textarea")[i];
+        // if current hour matches a working hour add color class to text area element
+        if (currentHour === workHour[i] ){
+            $(textAreaEl).addClass("present");
+        }
+        if (currentHour > workHour[i]){
+            $(textAreaEl).addClass("past");
+        }
+        if (currentHour < workHour[i]){
+            $(textAreaEl).addClass("future");
+        }
+        
+    }
+}
 
+//load app
+main();
 //saves tasks when SAVE Button is clicked
-$(".saveBtn").on("click", saveTask);
+$(".main-container").on("click", saveTask);
 
 
 
